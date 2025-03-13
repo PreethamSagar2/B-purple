@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface SidebarNavProps {
   userType: "individual" | "company";
@@ -24,6 +25,13 @@ interface SidebarNavProps {
 export function SidebarNav({ userType }: SidebarNavProps) {
   const [expanded, setExpanded] = useState(true);
   const location = useLocation();
+
+  // Mock user data - replace with actual user data from your auth system
+  const user = {
+    name: "John Doe",
+    avatar: "/placeholder-avatar.jpg",
+    initials: "JD"
+  };
 
   const individualLinks = [
     { name: "Home", href: "/dashboard/individual", icon: Home },
@@ -48,72 +56,89 @@ export function SidebarNav({ userType }: SidebarNavProps) {
     : "/dashboard/company/settings";
   
   return (
-    <aside
-      className={cn(
-        "group relative flex h-screen flex-col border-r bg-card transition-all duration-300 ease-in-out",
-        expanded ? "w-64" : "w-16"
-      )}
-    >
-      <div className="flex h-16 items-center justify-between border-b px-4">
-        <Link to="/" className={cn(expanded ? "justify-start" : "justify-center", "flex w-full items-center")}>
-          <Logo showText={expanded} />
+    <nav className={cn(
+      "h-screen border-r bg-background px-3 py-4 flex flex-col",
+      expanded ? "w-64" : "w-20"
+    )}>
+      {/* Toggle Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="self-end mb-2"
+        onClick={() => setExpanded(!expanded)}
+      >
+        {expanded ? <X size={20} /> : <Menu size={20} />}
+      </Button>
+
+      {/* Profile Section - Updated with responsive avatar */}
+      <div className={cn(
+        "flex flex-col items-center border-b mb-4",
+        expanded ? "py-6 px-4" : "py-3 px-2"
+      )}>
+        <Avatar className={cn(
+          "mb-4 transition-all duration-200",
+          expanded ? "h-36 w-36" : "h-12 w-12" // h-36 (144px) when expanded, h-12 (48px) when collapsed
+        )}>
+          <AvatarImage src={user.avatar} />
+          <AvatarFallback className={cn(
+            "transition-all duration-200",
+            expanded ? "text-4xl" : "text-base"
+          )}>
+            {user.initials}
+          </AvatarFallback>
+        </Avatar>
+        {expanded && (
+          <span className="text-base font-medium text-center">{user.name}</span>
+        )}
+      </div>
+
+      {/* Navigation Links */}
+      <div className="space-y-1">
+        {(userType === "individual" ? individualLinks : companyLinks).map((link) => {
+          const isActive = location.pathname === link.href;
+          return (
+            <Link
+              key={link.href}
+              to={link.href}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors",
+                isActive 
+                  ? "bg-primary text-primary-foreground" 
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                !expanded && "justify-center px-2"
+              )}
+            >
+              <link.icon size={20} />
+              {expanded && <span>{link.name}</span>}
+            </Link>
+          );
+        })}
+      </div>
+
+      {/* Settings and Logout at bottom */}
+      <div className="mt-auto space-y-1">
+        <Link
+          to="/settings"
+          className={cn(
+            "flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+            !expanded && "justify-center px-2"
+          )}
+        >
+          <Settings size={20} />
+          {expanded && <span>Settings</span>}
         </Link>
         <Button
           variant="ghost"
-          size="icon"
-          onClick={() => setExpanded(!expanded)}
-          className="ml-auto"
+          className={cn(
+            "w-full flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors text-muted-foreground hover:bg-muted hover:text-foreground",
+            !expanded && "justify-center px-2"
+          )}
+          onClick={() => {/* Add logout handler */}}
         >
-          {expanded ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          <LogOut size={20} />
+          {expanded && <span>Logout</span>}
         </Button>
       </div>
-      <nav className="flex-1 space-y-1 p-4">
-        <div className="space-y-1">
-          {links.map((link) => (
-            <Link
-              key={link.name}
-              to={link.href}
-              className={cn(
-                "flex items-center rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                location.pathname === link.href
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-                !expanded && "justify-center"
-              )}
-            >
-              <link.icon className={cn("h-5 w-5", expanded && "mr-3")} />
-              {expanded && <span>{link.name}</span>}
-            </Link>
-          ))}
-        </div>
-      </nav>
-      <div className="border-t p-4">
-        <div className="space-y-1">
-          <Link
-            to={settingsPath}
-            className={cn(
-              "flex items-center rounded-md px-3 py-2 text-sm font-medium",
-              location.pathname.includes(settingsPath)
-                ? "bg-secondary text-foreground"
-                : "text-muted-foreground hover:bg-secondary hover:text-foreground",
-              !expanded && "justify-center"
-            )}
-          >
-            <Settings className={cn("h-5 w-5", expanded && "mr-3")} />
-            {expanded && <span>Settings</span>}
-          </Link>
-          <Link
-            to="/"
-            className={cn(
-              "flex items-center rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground",
-              !expanded && "justify-center"
-            )}
-          >
-            <LogOut className={cn("h-5 w-5", expanded && "mr-3")} />
-            {expanded && <span>Sign Out</span>}
-          </Link>
-        </div>
-      </div>
-    </aside>
+    </nav>
   );
 }
