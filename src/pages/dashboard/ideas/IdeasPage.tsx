@@ -159,6 +159,10 @@ const IdeasPage = () => {
   const trendingIdeas = [...ideas].sort((a, b) => b.likes - a.likes).slice(0, 3);
   const savedIdeas = ideas.filter(idea => idea.saved);
 
+  const handleIdeaClick = (ideaId: string) => {
+    navigate(`/dashboard/individual/ideas/${ideaId}`);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -218,9 +222,10 @@ const IdeasPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredIdeas.map(idea => (
               <Card 
-                key={idea.id} 
-                className="group relative overflow-hidden transition-all duration-300 hover:scale-[1.02]"
+                key={idea.id}
+                className="group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                 style={{ height: 'fit-content', minHeight: '280px' }}
+                onClick={() => handleIdeaClick(idea.id)}
               >
                 {/* Base Card Content (Always Visible) */}
                 <div className="relative h-48 w-full">

@@ -14,6 +14,10 @@ export interface JobData {
   description: string;
   salary?: string;
   skills?: string[];
+  industry?: string;
+  experienceLevel?: string;
+  minimumExperience?: number;
+  requiredQualification?: string;
 }
 
 interface JobCardProps {

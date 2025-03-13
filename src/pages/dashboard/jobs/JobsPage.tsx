@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { JobCard, JobData } from "@/components/jobs/job-card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Briefcase, Search, MapPin, Filter, SlidersHorizontal, PlusCircle } from "lucide-react";
+import { Briefcase, Search, MapPin, Filter, SlidersHorizontal, PlusCircle, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const JobsPage = () => {
   const navigate = useNavigate();
@@ -29,6 +30,16 @@ const JobsPage = () => {
     "Remote": false
   });
   
+  const [selectedJob, setSelectedJob] = useState<JobData | null>(null);
+
+  const handleJobSelect = (job: JobData) => {
+    setSelectedJob(job);
+  };
+
+  const closeJobDetails = () => {
+    setSelectedJob(null);
+  };
+
   const mockJobs: JobData[] = [
     {
       id: "1",
@@ -117,7 +128,7 @@ const JobsPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <motion.div layout className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">Find Your Next Opportunity</h1>
           <p className="text-muted-foreground mt-2">Browse through jobs that match your skills and interests</p>
@@ -131,194 +142,214 @@ const JobsPage = () => {
             Post New Job
           </Button>
         )}
-      </div>
+      </motion.div>
       
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="relative col-span-1 md:col-span-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Job title, company, or keywords"
-                className="pl-9"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Location"
-                className="pl-9"
-                value={locationFilter}
-                onChange={(e) => setLocationFilter(e.target.value)}
-              />
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Filters */}
-        <Card className="lg:col-span-1 h-fit sticky top-6">
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium flex items-center gap-2">
-                <Filter className="h-4 w-4" />
-                Filters
-              </h3>
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-                Reset
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="pb-6">
-            <div className="space-y-6">
-              {/* Job Type */}
-              <div>
-                <h4 className="text-sm font-medium mb-3">Job Type</h4>
-                <div className="space-y-2">
-                  {Object.keys(jobTypes).map((type) => (
-                    <div key={type} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={`job-type-${type}`} 
-                        checked={jobTypes[type as keyof typeof jobTypes]}
-                        onCheckedChange={(checked) => {
-                          setJobTypes({
-                            ...jobTypes,
-                            [type]: !!checked
-                          });
-                        }}
-                      />
-                      <Label htmlFor={`job-type-${type}`}>{type}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Salary Range */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-sm font-medium">Salary Range</h4>
-                  <span className="text-xs text-muted-foreground">
-                    ${salaryRange[0]}k - ${salaryRange[1]}k
-                  </span>
-                </div>
-                <Slider
-                  defaultValue={salaryRange}
-                  max={200}
-                  min={0}
-                  step={10}
-                  onValueChange={setSalaryRange}
-                  className="mt-5"
+      <motion.div layout>
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative col-span-1 md:col-span-2">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Job title, company, or keywords"
+                  className="pl-9"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              
-              {/* Experience Level */}
-              <div>
-                <h4 className="text-sm font-medium mb-3">Experience Level</h4>
-                <Select defaultValue="all">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="entry">Entry Level</SelectItem>
-                    <SelectItem value="mid">Mid Level</SelectItem>
-                    <SelectItem value="senior">Senior Level</SelectItem>
-                    <SelectItem value="executive">Executive</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Location"
+                  className="pl-9"
+                  value={locationFilter}
+                  onChange={(e) => setLocationFilter(e.target.value)}
+                />
               </div>
-              
-              {/* Date Posted */}
-              <div>
-                <h4 className="text-sm font-medium mb-3">Date Posted</h4>
-                <Select defaultValue="any">
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select timeframe" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="any">Any time</SelectItem>
-                    <SelectItem value="day">Past 24 hours</SelectItem>
-                    <SelectItem value="week">Past week</SelectItem>
-                    <SelectItem value="month">Past month</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Apply button for mobile */}
-              <Button className="w-full md:hidden mt-4">
-                Apply Filters
-              </Button>
             </div>
           </CardContent>
         </Card>
-        
-        {/* Job Listings */}
-        <div className="lg:col-span-3 space-y-6">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <Briefcase className="h-5 w-5 text-muted-foreground" />
-              <span className="font-medium">
-                {filteredJobs.length} {filteredJobs.length === 1 ? 'Job' : 'Jobs'} Found
-              </span>
-            </div>
-            
-            <Select defaultValue="newest">
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="oldest">Oldest First</SelectItem>
-                <SelectItem value="relevant">Most Relevant</SelectItem>
-                <SelectItem value="salary-high">Highest Salary</SelectItem>
-                <SelectItem value="salary-low">Lowest Salary</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          
-          {filteredJobs.length > 0 ? (
-            <div className="space-y-4">
-              {filteredJobs.map(job => (
-                <JobCard key={job.id} job={job} />
-              ))}
-            </div>
-          ) : (
-            <Card className="py-12">
-              <CardContent className="flex flex-col items-center justify-center text-center">
-                <div className="rounded-full bg-muted p-4 mb-4">
-                  <Briefcase className="h-8 w-8 text-muted-foreground" />
+      </motion.div>
+      
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <motion.div 
+          layout 
+          className={`space-y-4 ${selectedJob ? 'lg:col-span-2' : 'lg:col-span-3'}`}
+        >
+          {/* Filters Section */}
+          <motion.div layout className="space-y-4">
+            <Card className="lg:col-span-1 h-fit sticky top-6">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-medium flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Filters
+                  </h3>
+                  <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
+                    Reset
+                  </Button>
                 </div>
-                <h3 className="text-xl font-medium mb-2">No jobs found</h3>
-                <p className="text-muted-foreground max-w-md">
-                  We couldn't find any jobs matching your criteria. Try adjusting your filters or search terms.
-                </p>
-                <Button 
-                  variant="outline" 
-                  className="mt-6"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setLocationFilter('');
-                    setSalaryRange([50, 150]);
-                    setJobTypes({
-                      "Full-time": true,
-                      "Part-time": true,
-                      "Contract": true,
-                      "Internship": true,
-                      "Remote": true
-                    });
-                  }}
-                >
-                  Reset Filters
-                </Button>
+              </CardHeader>
+              <CardContent className="pb-6">
+                <div className="space-y-6">
+                  {/* Job Type */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Job Type</h4>
+                    <div className="space-y-2">
+                      {Object.keys(jobTypes).map((type) => (
+                        <div key={type} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`job-type-${type}`} 
+                            checked={jobTypes[type as keyof typeof jobTypes]}
+                            onCheckedChange={(checked) => {
+                              setJobTypes({
+                                ...jobTypes,
+                                [type]: !!checked
+                              });
+                            }}
+                          />
+                          <Label htmlFor={`job-type-${type}`}>{type}</Label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Salary Range */}
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium">Salary Range</h4>
+                      <span className="text-xs text-muted-foreground">
+                        ${salaryRange[0]}k - ${salaryRange[1]}k
+                      </span>
+                    </div>
+                    <Slider
+                      defaultValue={salaryRange}
+                      max={200}
+                      min={0}
+                      step={10}
+                      onValueChange={setSalaryRange}
+                      className="mt-5"
+                    />
+                  </div>
+                  
+                  {/* Experience Level */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Experience Level</h4>
+                    <Select defaultValue="all">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select level" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Levels</SelectItem>
+                        <SelectItem value="entry">Entry Level</SelectItem>
+                        <SelectItem value="mid">Mid Level</SelectItem>
+                        <SelectItem value="senior">Senior Level</SelectItem>
+                        <SelectItem value="executive">Executive</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Date Posted */}
+                  <div>
+                    <h4 className="text-sm font-medium mb-3">Date Posted</h4>
+                    <Select defaultValue="any">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select timeframe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="any">Any time</SelectItem>
+                        <SelectItem value="day">Past 24 hours</SelectItem>
+                        <SelectItem value="week">Past week</SelectItem>
+                        <SelectItem value="month">Past month</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Apply button for mobile */}
+                  <Button className="w-full md:hidden mt-4">
+                    Apply Filters
+                  </Button>
+                </div>
               </CardContent>
             </Card>
+          </motion.div>
+
+          {/* Job Cards */}
+          <motion.div layout className="space-y-4">
+            {filteredJobs.map(job => (
+              <motion.div
+                layout
+                key={job.id}
+                onClick={() => handleJobSelect(job)}
+                className={`cursor-pointer ${selectedJob?.id === job.id ? 'ring-2 ring-primary' : ''}`}
+              >
+                <JobCard job={job} />
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+
+        <AnimatePresence>
+          {selectedJob && (
+            <motion.div
+              layout
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              className="lg:col-span-2"
+            >
+              <Card className="sticky top-4">
+                <CardHeader className="flex flex-row items-start justify-between">
+                  <div>
+                    <h2 className="text-2xl font-semibold">{selectedJob.title}</h2>
+                    <p className="text-muted-foreground">{selectedJob.company}</p>
+                  </div>
+                  <Button variant="ghost" size="icon" onClick={closeJobDetails}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-muted-foreground">Location</Label>
+                      <p>{selectedJob.location}</p>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">Job Type</Label>
+                      <p>{selectedJob.type}</p>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">Salary Range</Label>
+                      <p>{selectedJob.salary}</p>
+                    </div>
+                    <div>
+                      <Label className="text-muted-foreground">Posted</Label>
+                      <p>{selectedJob.postedAt}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-muted-foreground">Required Skills</Label>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedJob.skills?.map(skill => (
+                        <Badge key={skill} variant="secondary">{skill}</Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label className="text-muted-foreground">Job Description</Label>
+                    <p className="mt-2 text-sm">{selectedJob.description}</p>
+                  </div>
+
+                  <Button className="w-full">Apply Now</Button>
+                </CardContent>
+              </Card>
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );

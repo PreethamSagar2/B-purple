@@ -27,6 +27,7 @@ import CompanyOnboarding from "./pages/onboarding/CompanyOnboarding";
 import PostFreelancePage from "./pages/dashboard/freelance/PostFreelancePage";
 import PostIdeaPage from '@/pages/dashboard/ideas/PostIdeaPage';
 import PostJobPage from "./pages/dashboard/jobs/PostJobPage";
+import IdeaDetailsPage from "./pages/dashboard/ideas/IdeaDetailsPage";
 
 const queryClient = new QueryClient();
 
@@ -77,6 +78,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="/dashboard/freelance/post" element={<PostFreelancePage />} />
           <Route path="/dashboard/company/jobs/post" element={<PostJobPage />} />
+          <Route path="/dashboard/individual/ideas/:id" element={<IdeaDetailsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

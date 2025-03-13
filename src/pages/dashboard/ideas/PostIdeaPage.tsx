@@ -166,7 +166,7 @@ const PostIdeaPage = () => {
                       <SelectValue placeholder="Select visibility" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
+                      <SelectItem value="public">Crowd Funding</SelectItem>
                       <SelectItem value="private">Venture Capitalists/ Investors</SelectItem>
                     </SelectContent>
                   </Select>

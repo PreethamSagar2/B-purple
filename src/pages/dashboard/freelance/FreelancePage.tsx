@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Filter, Search, DollarSign, Clock, SlidersHorizontal, Trash2, Bookmark, PlusCircle } from "lucide-react";
+import { Filter, Search, DollarSign, Clock, SlidersHorizontal, Trash2, Bookmark, PlusCircle, X, FileText } from "lucide-react";
 
 interface FreelanceProject {
   id: string;
@@ -20,6 +20,11 @@ interface FreelanceProject {
   proposals: number;
   skills: string[];
   status: "Open" | "In progress" | "Completed";
+  category: string;
+  paymentTerms: string;
+  experienceLevel: string;
+  location: string;
+  attachments?: { name: string; url: string }[];
 }
 
 interface SavedProject {
@@ -34,6 +39,7 @@ interface SavedProject {
 
 const FreelancePage = () => {
   const navigate = useNavigate();
+  const [selectedProject, setSelectedProject] = useState<FreelanceProject | null>(null);
   
   const [projects] = useState<FreelanceProject[]>([
     {
@@ -44,7 +50,15 @@ const FreelancePage = () => {
       deadline: "3 weeks",
       proposals: 12,
       skills: ["UI/UX", "Shopify", "Figma", "Web Design"],
-      status: "Open"
+      status: "Open",
+      category: "Web/Software Development",
+      paymentTerms: "Fixed Price",
+      experienceLevel: "Intermediate",
+      location: "Remote",
+      attachments: [
+        { name: "Project Brief.pdf", url: "https://example.com/brief.pdf" },
+        { name: "Current Website Analysis.pdf", url: "https://example.com/analysis.pdf" }
+      ]
     },
     {
       id: "2",
@@ -54,7 +68,14 @@ const FreelancePage = () => {
       deadline: "2 months",
       proposals: 8,
       skills: ["React Native", "Firebase", "API Integration", "Mobile Development"],
-      status: "Open"
+      status: "Open",
+      category: "Mobile Development",
+      paymentTerms: "Hourly",
+      experienceLevel: "Advanced",
+      location: "Hybrid",
+      attachments: [
+        { name: "App Requirements.docx", url: "https://example.com/requirements.docx" }
+      ]
     },
     {
       id: "3",
@@ -64,7 +85,14 @@ const FreelancePage = () => {
       deadline: "1 month",
       proposals: 24,
       skills: ["Content Writing", "SEO", "Research", "Tech Knowledge"],
-      status: "Open"
+      status: "Open",
+      category: "Content Writing",
+      paymentTerms: "Fixed Price",
+      experienceLevel: "Beginner",
+      location: "Remote",
+      attachments: [
+        { name: "Blog Post Guidelines.pdf", url: "https://example.com/guidelines.pdf" }
+      ]
     },
     {
       id: "4",
@@ -74,7 +102,15 @@ const FreelancePage = () => {
       deadline: "2 weeks",
       proposals: 15,
       skills: ["Video Editing", "After Effects", "Motion Graphics"],
-      status: "Open"
+      status: "Open",
+      category: "Video Production",
+      paymentTerms: "Fixed Price",
+      experienceLevel: "Intermediate",
+      location: "Remote",
+      attachments: [
+        { name: "Raw Footage.zip", url: "https://example.com/raw_footage.zip" },
+        { name: "Brand Assets.zip", url: "https://example.com/brand_assets.zip" }
+      ]
     }
   ]);
 
@@ -118,6 +154,95 @@ const FreelancePage = () => {
     }
   ]);
 
+  const ProjectDetails = ({ project }: { project: FreelanceProject }) => (
+    <div className="h-full overflow-y-auto">
+      <div className="flex justify-between items-start mb-6">
+        <div>
+          <h2 className="text-2xl font-semibold">{project.title}</h2>
+          <Badge variant="outline" className="mt-2">{project.status}</Badge>
+        </div>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => setSelectedProject(null)}
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Category</h3>
+          <p>{project.category}</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Budget</h3>
+            <p>{project.budget}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Estimated Duration</h3>
+            <p>{project.deadline}</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Project Description</h3>
+          <p className="text-sm">{project.description}</p>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Required Skills</h3>
+          <div className="flex flex-wrap gap-2">
+            {project.skills.map(skill => (
+              <Badge key={skill} variant="outline" className="bg-primary/10">{skill}</Badge>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Payment Terms</h3>
+            <p>{project.paymentTerms}</p>
+          </div>
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Experience Level</h3>
+            <p>{project.experienceLevel}</p>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium text-muted-foreground mb-2">Location</h3>
+          <p>{project.location}</p>
+        </div>
+
+        {project.attachments && project.attachments.length > 0 && (
+          <div>
+            <h3 className="text-sm font-medium text-muted-foreground mb-2">Attachments</h3>
+            <div className="space-y-2">
+              {project.attachments.map(attachment => (
+                <Button
+                  key={attachment.name}
+                  variant="outline"
+                  className="w-full justify-start gap-2"
+                  onClick={() => window.open(attachment.url, '_blank')}
+                >
+                  <FileText className="h-4 w-4" />
+                  {attachment.name}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="pt-4">
+          <Button className="w-full">Submit Proposal</Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -139,73 +264,76 @@ const FreelancePage = () => {
           <TabsTrigger value="saved">Saved Projects</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="projects" className="space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Search projects by title or skill"
-                className="pl-9"
-              />
-            </div>
-            <Button variant="outline" className="md:w-auto w-full gap-2">
-              <Filter className="h-4 w-4" />
-              Filters
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-1 gap-6">
-            {projects.map(project => (
-              <Card key={project.id} className="hoverable-card">
-                <CardContent className="p-6">
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <div className="flex-1">
-                      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
-                        <h3 className="text-xl font-medium">{project.title}</h3>
-                        <Badge variant="outline" className="md:ml-auto w-fit">
-                          {project.status}
-                        </Badge>
-                      </div>
+        <TabsContent value="projects">
+          <div className="flex gap-6">
+            {/* Projects List */}
+            <div className={`grid gap-4 ${selectedProject ? 'w-1/2' : 'w-full'}`}>
+              {projects.map(project => (
+                <Card 
+                  key={project.id} 
+                  className={`hoverable-card cursor-pointer ${selectedProject?.id === project.id ? 'border-primary' : ''}`}
+                  onClick={() => setSelectedProject(project)}
+                >
+                  <CardContent className="p-6">
+                    <div className="flex flex-col md:flex-row gap-6">
+                      <div className="flex-1">
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+                          <h3 className="text-xl font-medium">{project.title}</h3>
+                          <Badge variant="outline" className="md:ml-auto w-fit">
+                            {project.status}
+                          </Badge>
+                        </div>
                       
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {project.skills.map(skill => (
-                          <Badge key={skill} variant="outline" className="bg-primary/10">{skill}</Badge>
-                        ))}
-                      </div>
+                        <div className="flex flex-wrap gap-2 mt-3">
+                          {project.skills.map(skill => (
+                            <Badge key={skill} variant="outline" className="bg-primary/10">{skill}</Badge>
+                          ))}
+                        </div>
                       
-                      <p className="mt-4 text-muted-foreground">{project.description}</p>
+                        <p className="mt-4 text-muted-foreground">{project.description}</p>
                       
-                      <div className="grid grid-cols-3 gap-4 mt-4">
-                        <div>
-                          <p className="text-xs text-muted-foreground">Budget</p>
-                          <div className="flex items-center mt-1">
-                            <DollarSign className="w-3 h-3 mr-1 text-muted-foreground" />
-                            <p className="text-sm font-medium">{project.budget}</p>
+                        <div className="grid grid-cols-3 gap-4 mt-4">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Budget</p>
+                            <div className="flex items-center mt-1">
+                              <DollarSign className="w-3 h-3 mr-1 text-muted-foreground" />
+                              <p className="text-sm font-medium">{project.budget}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Deadline</p>
+                            <div className="flex items-center mt-1">
+                              <Clock className="w-3 h-3 mr-1 text-muted-foreground" />
+                              <p className="text-sm">{project.deadline}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Proposals</p>
+                            <p className="text-sm mt-1">{project.proposals}</p>
                           </div>
                         </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Deadline</p>
-                          <div className="flex items-center mt-1">
-                            <Clock className="w-3 h-3 mr-1 text-muted-foreground" />
-                            <p className="text-sm">{project.deadline}</p>
-                          </div>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Proposals</p>
-                          <p className="text-sm mt-1">{project.proposals}</p>
-                        </div>
                       </div>
-                    </div>
                     
-                    <div className="flex flex-col gap-2 md:w-48 w-full">
-                      <Button className="w-full">Submit Proposal</Button>
-                      <Button variant="outline" className="w-full">Save</Button>
+                      <div className="flex flex-col gap-2 md:w-48 w-full">
+                        <Button className="w-full">Submit Proposal</Button>
+                        <Button variant="outline" className="w-full">Save</Button>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Project Details */}
+            {selectedProject && (
+              <div className="w-1/2">
+                <Card className="sticky top-0">
+                  <CardContent className="p-6">
+                    <ProjectDetails project={selectedProject} />
+                  </CardContent>
+                </Card>
+              </div>
+            )}
           </div>
         </TabsContent>
         
