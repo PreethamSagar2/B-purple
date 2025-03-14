@@ -48,8 +48,8 @@ const App = () => (
             {/* Individual Dashboard Routes */}
             <Route path="/dashboard/individual" element={<DashboardLayout userType="individual" />}>
               <Route index element={<IndividualDashboard />} />
-              <Route path="jobs" element={<JobsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="jobs" element={<JobsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="freelance" element={<FreelancePage />} />
               <Route path="core" element={<CoreConnectPage />} />
@@ -60,8 +60,8 @@ const App = () => (
             {/* Company Dashboard Routes */}
             <Route path="/dashboard/company" element={<DashboardLayout userType="company" />}>
               <Route index element={<CompanyDashboard />} />
-              <Route path="jobs" element={<JobsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="jobs" element={<JobsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="freelance" element={<FreelancePage />} />
               <Route path="core" element={<CoreConnectPage />} />

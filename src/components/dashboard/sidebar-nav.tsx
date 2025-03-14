@@ -35,7 +35,7 @@ export function SidebarNav({ userType }: SidebarNavProps) {
 
   const individualLinks = [
     { name: "Home", href: "/dashboard/individual", icon: Home },
-    { name: "Jobs & Internships", href: "/dashboard/individual/jobs", icon: Briefcase },
+    { name: "Jobs", href: "/dashboard/individual/jobs", icon: Briefcase },
     { name: "Freelance Projects", href: "/dashboard/individual/freelance", icon: Handshake },
     { name: "CORE Connect", href: "/dashboard/individual/core", icon: Users },
     { name: "Ideas & Invest", href: "/dashboard/individual/ideas", icon: LightbulbIcon },

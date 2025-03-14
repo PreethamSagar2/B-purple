@@ -9,7 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { JobCard, JobData } from "@/components/jobs/job-card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Briefcase, Search, MapPin, Filter, SlidersHorizontal, PlusCircle, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -146,9 +152,10 @@ const JobsPage = () => {
       
       <motion.div layout>
         <Card>
-          <CardContent className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="relative col-span-1 md:col-span-2">
+          <CardContent className="p-6 space-y-4">
+            {/* First row: Search and Location */}
+            <div className="flex flex-wrap gap-4">
+              <div className="relative flex-1 min-w-[200px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
@@ -158,7 +165,8 @@ const JobsPage = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
-              <div className="relative">
+
+              <div className="relative w-[200px]">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="text"
@@ -169,6 +177,72 @@ const JobsPage = () => {
                 />
               </div>
             </div>
+
+            {/* Second row: Other filters */}
+            <div className="flex flex-wrap gap-4 items-center">
+              <Select
+                value={Object.entries(jobTypes).find(([_, value]) => value)?.[0]}
+                onValueChange={(value) => {
+                  const resetTypes = Object.fromEntries(
+                    Object.keys(jobTypes).map(type => [type, false])
+                  );
+                  setJobTypes({
+                    ...resetTypes,
+                    [value]: true
+                  });
+                }}
+              >
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Job Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.keys(jobTypes).map((type) => (
+                    <SelectItem key={type} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                  ${salaryRange[0]}k - ${salaryRange[1]}k
+                </span>
+                <Slider
+                  defaultValue={salaryRange}
+                  max={200}
+                  min={0}
+                  step={10}
+                  onValueChange={setSalaryRange}
+                  className="w-[150px]"
+                />
+              </div>
+
+              <Select defaultValue="all">
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Experience" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Levels</SelectItem>
+                  <SelectItem value="entry">Entry Level</SelectItem>
+                  <SelectItem value="mid">Mid Level</SelectItem>
+                  <SelectItem value="senior">Senior Level</SelectItem>
+                  <SelectItem value="executive">Executive</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select defaultValue="any">
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Posted Date" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any time</SelectItem>
+                  <SelectItem value="day">Past 24 hours</SelectItem>
+                  <SelectItem value="week">Past week</SelectItem>
+                  <SelectItem value="month">Past month</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
@@ -176,106 +250,8 @@ const JobsPage = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <motion.div 
           layout 
-          className={`space-y-4 ${selectedJob ? 'lg:col-span-2' : 'lg:col-span-3'}`}
+          className={`space-y-4 ${selectedJob ? 'lg:col-span-2' : 'lg:col-span-4'}`}
         >
-          {/* Filters Section */}
-          <motion.div layout className="space-y-4">
-            <Card className="lg:col-span-1 h-fit sticky top-6">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-medium flex items-center gap-2">
-                    <Filter className="h-4 w-4" />
-                    Filters
-                  </h3>
-                  <Button variant="ghost" size="sm" className="h-8 px-2 text-xs">
-                    Reset
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="pb-6">
-                <div className="space-y-6">
-                  {/* Job Type */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">Job Type</h4>
-                    <div className="space-y-2">
-                      {Object.keys(jobTypes).map((type) => (
-                        <div key={type} className="flex items-center space-x-2">
-                          <Checkbox 
-                            id={`job-type-${type}`} 
-                            checked={jobTypes[type as keyof typeof jobTypes]}
-                            onCheckedChange={(checked) => {
-                              setJobTypes({
-                                ...jobTypes,
-                                [type]: !!checked
-                              });
-                            }}
-                          />
-                          <Label htmlFor={`job-type-${type}`}>{type}</Label>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  {/* Salary Range */}
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-sm font-medium">Salary Range</h4>
-                      <span className="text-xs text-muted-foreground">
-                        ${salaryRange[0]}k - ${salaryRange[1]}k
-                      </span>
-                    </div>
-                    <Slider
-                      defaultValue={salaryRange}
-                      max={200}
-                      min={0}
-                      step={10}
-                      onValueChange={setSalaryRange}
-                      className="mt-5"
-                    />
-                  </div>
-                  
-                  {/* Experience Level */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">Experience Level</h4>
-                    <Select defaultValue="all">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select level" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="all">All Levels</SelectItem>
-                        <SelectItem value="entry">Entry Level</SelectItem>
-                        <SelectItem value="mid">Mid Level</SelectItem>
-                        <SelectItem value="senior">Senior Level</SelectItem>
-                        <SelectItem value="executive">Executive</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {/* Date Posted */}
-                  <div>
-                    <h4 className="text-sm font-medium mb-3">Date Posted</h4>
-                    <Select defaultValue="any">
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select timeframe" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="any">Any time</SelectItem>
-                        <SelectItem value="day">Past 24 hours</SelectItem>
-                        <SelectItem value="week">Past week</SelectItem>
-                        <SelectItem value="month">Past month</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  {/* Apply button for mobile */}
-                  <Button className="w-full md:hidden mt-4">
-                    Apply Filters
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
           {/* Job Cards */}
           <motion.div layout className="space-y-4">
             {filteredJobs.map(job => (

@@ -20,10 +20,14 @@ export function Header() {
   };
 
   const handleProfileClick = () => {
+    // Check user type and navigate accordingly
     if (userType === 'individual') {
       navigate('/dashboard/individual/profile');
     } else if (userType === 'company') {
       navigate('/dashboard/company/profile');
+    } else {
+      // If no userType is found, redirect to login or show an error
+      navigate('/dashboard/individual/profile'); // Redirect to individual profile as a fallbackn-;
     }
   };
 
